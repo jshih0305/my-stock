@@ -1,26 +1,238 @@
 @import "tailwindcss";
 
+/* ---------- Design tokens ---------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f3ef;
+  --foreground: #16150f;
+  --surface: #ffffff;
+  --surface-2: #f8f7f4;
+  --text-primary: #16150f;
+  --text-secondary: #5f5d55;
+  --text-tertiary: #8f8c82;
+  --grid: #ebe9e3;
+  --border: #e4e2db;
+  --series-1: #2563eb;
+  --accent: #1d4ed8;
+  --accent-contrast: #ffffff;
+  /* Taiwan convention: red = up, green = down */
+  --up: #d03535;
+  --down: #13804a;
+  --up-soft: rgb(208 53 53 / 0.09);
+  --down-soft: rgb(19 128 74 / 0.09);
+  --flat-soft: rgb(95 93 85 / 0.08);
+  --shadow-sm: 0 1px 2px rgb(22 21 15 / 0.05);
+  --shadow: 0 1px 2px rgb(22 21 15 / 0.04), 0 10px 30px -14px rgb(22 21 15 / 0.14);
+  --glow: radial-gradient(1200px 420px at 50% -120px, rgb(37 99 235 / 0.10), transparent 70%);
+  color-scheme: light;
+}
+
+/* Dark theme: <html data-theme="dark"> is set before paint by the script in layout.tsx */
+:root[data-theme="dark"] {
+  --background: #0b0c0f;
+  --foreground: #f1f0ec;
+  --surface: #131519;
+  --surface-2: #1a1d22;
+  --text-primary: #f1f0ec;
+  --text-secondary: #a8a69f;
+  --text-tertiary: #77766f;
+  --grid: #23262c;
+  --border: #262930;
+  --series-1: #6b9bff;
+  --accent: #5b8cff;
+  --accent-contrast: #0b0c0f;
+  --up: #ff6b6b;
+  --down: #3fcf80;
+  --up-soft: rgb(255 107 107 / 0.12);
+  --down-soft: rgb(63 207 128 / 0.12);
+  --flat-soft: rgb(168 166 159 / 0.1);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 14px 34px -16px rgb(0 0 0 / 0.7);
+  --glow: radial-gradient(1200px 420px at 50% -120px, rgb(91 140 255 / 0.16), transparent 70%);
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-geist-sans), var(--font-noto-tc), "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 body {
-  background: var(--background);
+  background: var(--glow), var(--background);
+  background-repeat: no-repeat;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 0;
+}
+
+::selection {
+  background: rgb(37 99 235 / 0.2);
+}
+
+/* ---------- Shared component classes (Tailwind v4 custom utilities) ---------- */
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+}
+
+@utility card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+@utility meta {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+@utility num {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Segmented control: buttons inside use aria-pressed for the active one */
+@utility seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+
+  & > button {
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.55rem;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+  & > button:hover {
+    color: var(--text-primary);
+  }
+  & > button[aria-pressed="true"] {
+    background: var(--surface);
+    color: var(--text-primary);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm), 0 0 0 1px var(--border);
+  }
+}
+
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@utility pill-up {
+  background: var(--up-soft);
+  color: var(--up);
+}
+@utility pill-down {
+  background: var(--down-soft);
+  color: var(--down);
+}
+@utility pill-flat {
+  background: var(--flat-soft);
+  color: var(--text-secondary);
+}
+
+@utility field {
+  height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgb(37 99 235 / 0.15);
+  }
+}
+
+@utility btn-primary {
+  height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  background: var(--text-primary);
+  color: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: opacity 0.15s, transform 0.15s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+@utility btn-ghost {
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+  }
+}
+
+@utility notice-error {
+  border-radius: 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--up) 30%, var(--border));
+  background: var(--up-soft);
+  color: var(--up);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+}
+
+@utility skeleton {
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--grid) 50%, var(--surface-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
 }
